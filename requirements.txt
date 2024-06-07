@@ -1,6 +1,6 @@
 psutil
 pyrogram
-pyrogram tgcrypto
+tgcrypto
 apscheduler 
 pytz 
 psutil 
