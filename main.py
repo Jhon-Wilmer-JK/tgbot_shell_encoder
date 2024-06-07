@@ -18,7 +18,7 @@ import asyncio
 # Lista para mantener un registro de los procesos en ejecución
 TELEGRAM_API = "22502818"
 TELEGRAM_HASH = "34a99207c3de31a541e6cfbe9be44534"
-BOT_TOKEN = "6767087549:AAFY-rZmjJ7JGJrI4XhMQyXKrniEhF-BAHM" #jk bot mirror leech 1
+BOT_TOKEN = "6717314885:AAEA22N8aDdMNj-Hp9kVIwT68-gQhlBfgjA" #luminebot
 
 #####################################################################################
 #####################################################################################
