@@ -1,0 +1,7 @@
+psutil
+pyrogram
+pyrogram tgcrypto
+apscheduler 
+pytz 
+psutil 
+tqdm 
