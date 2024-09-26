@@ -25,14 +25,14 @@ BOT_TOKEN = "" #jk bot mirror leech 1
 # variables principales
 MI_CHAT_ID =   #id de usuario, completar
 Admin = 2096120369 #id de un usuario admin
-GRUPO_ALERTAS = -1002078644548
+GRUPO = -100
 
 # Define una variable global para almacenar el proceso
 shell_tasks = {}
 #   Lista de Habilitados para usar el bot
 #---grupos:
 SUDOS= (MI_CHAT_ID,Admin,)
-GRUPOS_STAFF = (GRUPO_ALERTAS,)
+GRUPOS_STAFF = (GRUPO,)
 # Obtiene la ruta del directorio actual donde se encuentra el script bot.py
 current_directory = os.path.dirname(os.path.abspath(__file__))
 #####################################################################################
