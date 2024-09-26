@@ -11,7 +11,9 @@ edita main.py y completa los datos del bot, id usuario, id grupo, link grupo/can
 - **Comandos**
 ```
 /shell = ejecuta comando que tiene salida rápido con un ls, cat, mkdir, rm, df -h y otros
-/cmd = ejecuta comandos largos y y dinámicos como wget, ffmpeg encoding, y otros pero mayormente descargas de archivos y comando que necesitan tiempo de ejecución y salidas largas 
+/cmd = ejecuta comandos largos y y dinámicos como wget, ffmpeg encoding, y otros pero mayormente descargas de archivos y comando que necesitan tiempo de ejecución y salidas largas
+/compress -crf 24 = comprimir videos mp4 controlando crf 720p
+/commpress2pass = comprimir vídeo con bitrate de 460k en 2 pasadas, el resultado es un video de 24 min de anime en 90MB de 720p
 ```
 - **Necesario para shell y cmd**
 
