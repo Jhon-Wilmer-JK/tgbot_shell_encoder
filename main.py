@@ -18,7 +18,7 @@ import asyncio
 # Lista para mantener un registro de los procesos en ejecución
 TELEGRAM_API = ""
 TELEGRAM_HASH = ""
-BOT_TOKEN = "" #jk bot mirror leech 1
+BOT_TOKEN = "" 
 
 #####################################################################################
 #####################################################################################
@@ -310,8 +310,7 @@ async def download_video(client, message, message2,param):
         video_res2 = f"{current_directory}/encoder/HD_{video_name}"
         video_res3 = f"{current_directory}/encoder/HDL_{video_name}"
         # Configura el descriptor de archivo en modo no bloqueante
-        #comando = f'cd encoder && ffmpeg -i "{video_name}" -c:v libx264 -s 1280x720 -b:v 750K -preset fast -tune animation -profile:v high -vf "ass=./marca_bot.ass" -color_primaries 1 -color_range 1 -color_trc 1 -colorspace 1 -c:a copy "{video_res}" -y'
-
+                
         # Comando ffmpeg
         comandos = f'cd encoder && mkdir -p encoded && ' \
                 f'ffmpeg -i "{video_name}" -filter_complex "[0:v]split=2[v1];[v1]ass=./marca_bot.ass[v1out]" ' \
