@@ -16,36 +16,23 @@ import os
 import pty
 import asyncio
 # Lista para mantener un registro de los procesos en ejecución
-TELEGRAM_API = "22502818"
-TELEGRAM_HASH = "34a99207c3de31a541e6cfbe9be44534"
-BOT_TOKEN = "6717314885:AAEA22N8aDdMNj-Hp9kVIwT68-gQhlBfgjA" #luminebot
+TELEGRAM_API = ""
+TELEGRAM_HASH = ""
+BOT_TOKEN = "" #jk bot mirror leech 1
 
 #####################################################################################
 #####################################################################################
 # variables principales
-MI_CHAT_ID = 2096120369  #este es mi chat_id con el bot Jhon_Wilmer_JK
+MI_CHAT_ID =   #id de usuario, completar
+Admin = 2096120369 #id de un usuario admin
 GRUPO_ALERTAS = -1002078644548
-ALMACENAMIENTO_CHAT = -1002109832811
+
 # Define una variable global para almacenar el proceso
 shell_tasks = {}
-
 #   Lista de Habilitados para usar el bot
 #---grupos:
-grup_receptora = -1002035260752
-Staff = -1001677796993
-staff2 = -1001982038052
-Grupo_Principal = -1002111484098
-Jhon_Wilmer_JK = MI_CHAT_ID
-YaichiAnime = 6666411044
-Patrick = 1741704976
-Erlan = 5029607365
-Hernandez = 2107336501
-Ernesto= 2087510950
-Alejandra=1466015176
-ADMINS = (Jhon_Wilmer_JK,YaichiAnime,Patrick,Erlan,Hernandez,Ernesto,Alejandra)
-SUDOS= (Jhon_Wilmer_JK,YaichiAnime,)
-GRUPO_STAFF = -1002111484098
-GRUPOS_STAFF = (Grupo_Principal,staff2,grup_receptora,)
+SUDOS= (MI_CHAT_ID,Admin,)
+GRUPOS_STAFF = (GRUPO_ALERTAS,)
 # Obtiene la ruta del directorio actual donde se encuentra el script bot.py
 current_directory = os.path.dirname(os.path.abspath(__file__))
 #####################################################################################
@@ -59,7 +46,7 @@ basicConfig(format="[%(asctime)s] [%(levelname)s] - %(message)s",
             handlers=[FileHandler('log.txt'), StreamHandler()],
             level=INFO)
 # Creación del cliente de Pyrogram
-bot = tgClient('bot', TELEGRAM_API, TELEGRAM_HASH, bot_token=BOT_TOKEN, workers=1000,
+bot = tgClient('botsh', TELEGRAM_API, TELEGRAM_HASH, bot_token=BOT_TOKEN, workers=1000,
                parse_mode=enums.ParseMode.HTML)
 # Inicio del programador asincrónico
 scheduler = AsyncIOScheduler(timezone=utc)
@@ -80,41 +67,6 @@ async def start_command(client, message):
         f"{user_mention} Detalles extras:\npara mas info de este bot comunicarse con @Jhon_Wilmer_JK\n[𝙔𝙖𝙞𝙘𝙝𝙞_𝙅𝙆㉿𝘽𝙤𝙩 ] <b>v1.35.0</b>",
         reply_to_message_id=message.id
         )
-
-
-# Manejar el comando /msg
-@bot.on_message(filters.command("msg"))
-async def enviar_a_usuario(client, message):
-    user_mention = message.from_user.mention(style="html") if message.from_user else ""
-    print(f'Ejecutando comando: /msg\n')
-    # Verificar si el usuario es sudo
-    if message.chat.id not in SUDOS:
-        return
-    comando = message.text.split()
-    # Verificar si el comando incluye un user_id y un mensaje
-    if len(message.text.split()) < 3:
-        respuesta_error = "Formato incorrecto. Debes usar /msg user_id mensaje"
-        await message.reply(respuesta_error)
-        return
-    # Obtener el user_id y el mensaje del comando
-    user_id = comando[1]
-    mensaje = " ".join(comando[2:])
-    print (user_id)
-    print(mensaje)
-    # Formar el mensaje que se enviará al usuario
-    mensaje_usuario = f"{mensaje}"
-    try:
-        # Formar el mensaje que se enviará al usuario
-        mensaje_usuario = f"{mensaje}"
-        # Agregar un mensaje de registro
-        print(f"Enviando mensaje a user_id: {user_id}, Usuario: {user_mention}")
-        # Enviar el mensaje al usuario
-        await bot.send_message(user_id, mensaje_usuario)
-    except Exception as e:
-        # Manejo de excepciones
-        print(f"No se pudo enviar el mensaje: {str(e)}")
-        await message.reply(f"❌ Error al enviar el mensaje: {str(e)}", reply_to_message_id=message.id)
-
 
 
 # Función para ejecutar comandos en el shell de forma asíncrona
@@ -140,7 +92,6 @@ async def shell_command(client, message):
 
     # Extraer el comando del mensaje
     command = message.text.split(maxsplit=1)[1] if len(message.text.split()) > 1 else ""
-    #command = message.text.split(maxsplit=1)[1]
     if not command:
         await message.reply("Por favor, proporciona un comando para ejecutar en el shell.")
         return
@@ -148,15 +99,28 @@ async def shell_command(client, message):
     # Ejecutar el comando en el shell
     stdout, stderr = await run_shell_command(command)
 
-    # Enviar resultados al usuario
-    response = f"{user_mention}\n<b>Resultados del comando:</b>\n\n"
-    response += "<b>stdout:</b>\n"
-    response += f"<code>{stdout}</code>\n\n"
-    response += "<b>stderr:</b>\n"
-    response += f"<code>{stderr}</code>\n"
+    # Comprobar el tamaño del stdout
+    if len(stdout) > 4096:  # Límite aproximado de caracteres en Telegram
+        # Crear un archivo temporal para el stdout
+        file_path = f'std_out_{message.id}.txt'
+        with open(file_path, 'w') as file:
+            file.write(stdout)
+        
+        # Enviar el archivo al usuario
+        await message.reply_document(file_path, caption=f"{user_mention}\n<b>Resultados del comando:</b>\n<b>stdout:</b> (guardado en archivo)\n<b>stderr:</b>\n<code>{stderr}</code>")
+        
+        # Eliminar el archivo después de enviarlo
+        os.remove(file_path)
+    else:
+        # Enviar resultados al usuario directamente
+        response = f"{user_mention}\n<b>Resultados del comando:</b>\n\n"
+        response += "<b>stdout:</b>\n"
+        response += f"<code>{stdout}</code>\n\n"
+        response += "<b>stderr:</b>\n"
+        response += f"<code>{stderr}</code>\n"
 
-    await message.reply_text(response, reply_to_message_id=message.id)
-    
+        await message.reply_text(response, reply_to_message_id=message.id)
+
 
 
 ############################################################################################################
@@ -307,7 +271,7 @@ async def cancelar_descarga_command(client, message):
 ############################################################################################################
 descarga_tasks = {}
 # Función para descargar un video con seguimiento de progreso
-async def download_video(client, message, message2):
+async def download_video(client, message, message2,param):
     ubicacion = 'encoder/marca.png'
     if not os.path.exists(ubicacion):
         cmd_marca = f'cd encoder && wget https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFA-jPETEHVcHYARdjsZWmUqCkTK70CDFlduqSxgoa4gUXQCvKDcvJQqsoKPmm7ECku-NFHU0LUrDAy-YbxCw1eQOGMRmIFqBJSg9_yyQXqhj8ohUTLWt1TvOmYrvwnp1gVmhyphenhyphenDifTd5CuvOjoFiwgTCnw2GoSLT2BnLbcb-nyU3utoW0rhiMBhT09THSA/s16000/marca.png'
@@ -329,14 +293,14 @@ async def download_video(client, message, message2):
                                                     f"┃ [□□□□□□□□□□□□□] 00.00%\n"
                                                     f"<b>┠ Status:</b> En cola...\n"
                                                     f"<b>┠ Speed:</b> 0.00 MiB/s <b>| Elapsed:</b> 0m 0s\n"
-                                                    f"<b>┠ Info:</b> Encode | -c:v libx264 -crf 20\n"
+                                                    f"<b>┠ Info:</b> Encode | -c:v libx264 -crf {param}\n"
                                                     f"<b>┠ Mode:</b> #Leech | #Pyrogram\n"
                                                     f"<b>┠ User:</b> {user_mention} <b>| ID:</b> <code>{user_id}</code> \n"
                                                     f"<b>┖</b> cancel_en_espera",
                                                     reply_to_message_id=message2.id,
                                                     disable_web_page_preview=True)
-        descarga_tasks[progress_message.id] = asyncio.current_task()  # Almacena la tarea actual en el diccionario  
-                                                      
+        descarga_tasks[progress_message.id] = asyncio.current_task()  # Almacena la tarea actual en el diccionario
+
         # Descarga el video con seguimiento de progreso
         await message.download(file_name=file_path, progress=progress_down_callback(progress_message,video_name, user_mention, user_id,))
         logging.info("Video descargado exitosamente!")
@@ -344,12 +308,12 @@ async def download_video(client, message, message2):
         logging.info("---iniciando encoding")
         time.sleep(1)
         video_res2 = f"{current_directory}/encoder/HD_{video_name}"
-        video_res3 = f"{current_directory}/encoder/HDL_{video_name}"  
+        video_res3 = f"{current_directory}/encoder/HDL_{video_name}"
         # Configura el descriptor de archivo en modo no bloqueante
-        #comando = f'cd encoder && ffmpeg -i "{video_name}" -c:v libx264 -s 1280x720 -b:v 750K -preset fast -tune animation -profile:v high -vf "ass=./marca_bot.ass" -color_primaries 1 -color_range 1 -color_trc 1 -colorspace 1 -c:a copy "{video_res}" -y' 
-        
+        #comando = f'cd encoder && ffmpeg -i "{video_name}" -c:v libx264 -s 1280x720 -b:v 750K -preset fast -tune animation -profile:v high -vf "ass=./marca_bot.ass" -color_primaries 1 -color_range 1 -color_trc 1 -colorspace 1 -c:a copy "{video_res}" -y'
+
         # Comando ffmpeg
-        comando = f'cd encoder && mkdir -p encoded && ' \
+        comandos = f'cd encoder && mkdir -p encoded && ' \
                 f'ffmpeg -i "{video_name}" -filter_complex "[0:v]split=2[v1];[v1]ass=./marca_bot.ass[v1out]" ' \
                 f'-map "[v1out]" -map 0:a -c:v libx264 -s 1280x720 -crf 26 -preset fast -tune animation -profile:v high -c:a copy "{video_res2}" -y && ' \
                 f'ffmpeg -i "{video_res2}" -ss 00:01:00 -s 1280x720 -frames:v 1 "{video_res2}_fondo.jpg" -y && ' \
@@ -360,12 +324,18 @@ async def download_video(client, message, message2):
                 f'ffmpeg -i "{video_res2}" -c:a aac -ab 70k -ac 2 -ar 22050 -vcodec libx264 -vb 460k -pass 2 -passlogfile "2pass_{video_res2}.log" -profile:v high10 -tune animation -preset slow -s 1280x720 -scodec copy -map 0 "{current_directory}/encoder/encoded/HDL_{video_name}" && ' \
                 f'rm "2pass_{video_res2}.log*" && ' \
                 f'telegram-upload -i --thumbnail-file "{video_res2}_min.jpg" "{current_directory}/encoder/encoded/HDL_{video_name}" --to https://t.me/+OyZLcyRrDuszZGJh -d'
+
+
+        comando = f'cd encoder && ' \
+                f'ffmpeg -i "{video_name}" -map 0:v -map 0:a -c:v libx264 -s 1280x720 -crf {param} -preset medium -tune animation -profile:v high -c:a copy "v2_{video_name}" && ' \
+                f'ffmpeg -i "v2_{video_name}" -ss 00:01:00 -s 1280x720 -frames:v 1 "v2_{video_name}_fondo.jpg" -y && ' \
+                f'ffmpeg -i "v2_{video_name}_fondo.jpg" -i "marca.png" -filter_complex "[1:v]scale=iw/2:-1 [marca_scaled]; [0:v][marca_scaled]overlay=W-w-10:H-h-10" "v2_{video_name}_min.jpg" -y && ' \
+                f'telegram-upload -i --thumbnail-file "v2_{video_name}_min.jpg" "v2_{video_name}" --to https://t.me/+OyZLcyRrDuszZGJh -d && ' \
+                f'rm "v2_{video_name}_fondo.jpg" && rm "v2_{video_name}_min.jpg" '
+
+
+
         print(f"bash ==> {comando}")
-
-
-
-
-
 
         # Iniciar el proceso con pty.fork()
         pid, fd = pty.fork()
@@ -376,8 +346,8 @@ async def download_video(client, message, message2):
             # Padre
             proceso_descarga = pid
             descarga_tasks[progress_message.id] = asyncio.current_task()  # Almacena la tarea actual en el diccionario
-            start_time = time.time() 
-            last_update_time = start_time  
+            start_time = time.time()
+            last_update_time = start_time
             video_size = None
             video_folder = None
             percentage = None
@@ -446,7 +416,7 @@ async def download_video(client, message, message2):
                                                         f"<b>┠ CPU: </b>{cpu_usage:.1f}%\n"
                                                         f"<b>┠ OS Uptime: </b>{datetime.timedelta(seconds=int(time.time() - psutil.boot_time()))}\n"
                                                         f"<b>┖ U: </b>{used_disk / (1024 ** 3):.2f}GB <b>| F: </b>{free_disk / (1024 ** 3):.2f}GB<b> | T: </b>{total_disk / (1024 ** 3):.2f}GB"
-                                                        )                        
+                                                        )
                 except OSError as e:
                     if e.errno == 5:  # Error de E/S (entrada/salida)
                         break
@@ -457,7 +427,7 @@ async def download_video(client, message, message2):
             os.remove(f"encoder/{video_name}")
             logging.info(video_folder2)
             logging.info(video_folder3)
-
+            #await progress_message.edit_text(f"v2_{video_name} ver en")
 
 
 def progress_down_callback(progress_message, video_name, user_mention, user_id):
@@ -493,10 +463,20 @@ def progress_down_callback(progress_message, video_name, user_mention, user_id):
         logging.info(f"Downloading: {percentage:.2f}% | Elapsed: {elapsed_minutes}m {elapsed_seconds}s | {video_name}")
     return callback
 
-# Manejador de comando para descargar videos
-@bot.on_message(filters.command("encoding") & filters.reply)
+
+
+@bot.on_message(filters.command("compress") & filters.reply)
 async def descargar_video_command(client, message):
     user_mention = message.from_user.mention(style="html") if message.from_user else ""
+    command_parts = message.text.split()
+
+    # Verifica si el comando es correcto
+    if len(command_parts) != 3 or command_parts[1] != '-crf' or not command_parts[2].isdigit():
+        await message.reply_text(f"{user_mention} Comando inválido. Uso correcto: <code>/compress -crf [número]</code>", reply_to_message_id=message.id)
+        return
+
+    param = int(command_parts[2])
+
     if message.chat.id in GRUPOS_STAFF or message.from_user.id in SUDOS:
         # Verifica si el mensaje al que se responde es un video
         if message.reply_to_message and message.reply_to_message.video:
@@ -505,19 +485,12 @@ async def descargar_video_command(client, message):
             if cpu_usage >= 70.0:
                 await message.reply_text(f"<b>{user_mention} ⚠️ Servidor ocupado, intente más tarde‼️</b>\n<b>CPU: </b>{cpu_usage:.1f}%\n", reply_to_message_id=message.id)
             else:
-                await download_video(client, message.reply_to_message, message)
+                await download_video(client, message.reply_to_message, message, param)
         else:
             await message.reply_text(f"{user_mention} Por favor, responde a un video para descargarlo.", reply_to_message_id=message.id)
     else:
         await message.reply_text(f"{user_mention}❌ No autorizado 🚫", reply_to_message_id=message.id)
-        
-@bot.on_message(filters.command("encoding"))
-async def descargar_video_command(client, message):
-    user_mention = message.from_user.mention(style="html") if message.from_user else ""
-    if message.chat.id in GRUPOS_STAFF or message.from_user.id in SUDOS:
-        await message.reply_text(f"<b>{user_mention} Información:</b>\n/encoding es un comando para encodear videos con -c:v libx264 -crf 20, pero el comando está restringido a uso Premium", reply_to_message_id=message.id)
-    else:
-        await message.reply_text(f"{user_mention}❌ No autorizado 🚫", reply_to_message_id=message.id)
+
 
 def format_size(size_in_bytes):
     suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
