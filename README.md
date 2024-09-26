@@ -4,6 +4,7 @@
 
 aún no funciona del todo sin hacer ajustes amnuales del lado del servidor
 actualmente está ajustado solo para mi uso y tiene que editar el código cada uno dependiendo al uso que le de
+edita main.py y completa los datos del bot, id usuario, id grupo, link grupo/canal y api ip-hash
 
 - **Comandos**
 ```
