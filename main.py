@@ -25,8 +25,8 @@ BOT_TOKEN = ""
 # variables principales
 MI_CHAT_ID =   #id de usuario, completar
 Admin = 2096120369 #id de un usuario admin
-GRUPO = -100
-
+GRUPO = -100 # grupo id autorizado
+salida_link_grupo = "https:/t.me/+1rsda****a" #donde va a ir el video
 # Define una variable global para almacenar el proceso
 shell_tasks = {}
 #   Lista de Habilitados para usar el bot
@@ -277,6 +277,10 @@ async def download_video(client, message, message2,param):
         cmd_marca = f'cd encoder && wget https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFA-jPETEHVcHYARdjsZWmUqCkTK70CDFlduqSxgoa4gUXQCvKDcvJQqsoKPmm7ECku-NFHU0LUrDAy-YbxCw1eQOGMRmIFqBJSg9_yyQXqhj8ohUTLWt1TvOmYrvwnp1gVmhyphenhyphenDifTd5CuvOjoFiwgTCnw2GoSLT2BnLbcb-nyU3utoW0rhiMBhT09THSA/s16000/marca.png'
         await asyncio.create_subprocess_shell(cmd_marca)
 
+    if param == "2pass":
+        infor = f"-passlogfile"
+    else:
+        infor = f"-crf {param}"
     user_mention = message2.from_user.mention(style="html") if message.from_user else ""
     user_id = message2.from_user.id
     info="Encode | -c:v libx264 -crf 20"
@@ -293,7 +297,7 @@ async def download_video(client, message, message2,param):
                                                     f"┃ [□□□□□□□□□□□□□] 00.00%\n"
                                                     f"<b>┠ Status:</b> En cola...\n"
                                                     f"<b>┠ Speed:</b> 0.00 MiB/s <b>| Elapsed:</b> 0m 0s\n"
-                                                    f"<b>┠ Info:</b> Encode | -c:v libx264 -crf {param}\n"
+                                                    f"<b>┠ Info:</b> Encode | -c:v libx264 {infor}\n"
                                                     f"<b>┠ Mode:</b> #Leech | #Pyrogram\n"
                                                     f"<b>┠ User:</b> {user_mention} <b>| ID:</b> <code>{user_id}</code> \n"
                                                     f"<b>┖</b> cancel_en_espera",
@@ -310,28 +314,31 @@ async def download_video(client, message, message2,param):
         video_res2 = f"{current_directory}/encoder/HD_{video_name}"
         video_res3 = f"{current_directory}/encoder/HDL_{video_name}"
         # Configura el descriptor de archivo en modo no bloqueante
-                
+        #comando = f'cd encoder && ffmpeg -i "{video_name}" -c:v libx264 -s 1280x720 -b:v 750K -preset fast -tune animation -profile:v high -vf "ass=./marca_bot.ass" -color_primaries 1 -color_range 1 -color_trc 1 -colorspace 1 -c:a copy "{video_res}" -y'
+
         # Comando ffmpeg
-        comandos = f'cd encoder && mkdir -p encoded && ' \
-                f'ffmpeg -i "{video_name}" -filter_complex "[0:v]split=2[v1];[v1]ass=./marca_bot.ass[v1out]" ' \
-                f'-map "[v1out]" -map 0:a -c:v libx264 -s 1280x720 -crf 26 -preset fast -tune animation -profile:v high -c:a copy "{video_res2}" -y && ' \
-                f'ffmpeg -i "{video_res2}" -ss 00:01:00 -s 1280x720 -frames:v 1 "{video_res2}_fondo.jpg" -y && ' \
-                f'ffmpeg -i "{video_res2}_fondo.jpg" -i "marca.png" -filter_complex "[1:v]scale=iw/2:-1 [marca_scaled]; [0:v][marca_scaled]overlay=W-w-10:H-h-10" "{video_res2}_min.jpg" -y && ' \
-                f'telegram-upload -i --thumbnail-file "{video_res2}_min.jpg" "{video_res2}" --to https://t.me/+OyZLcyRrDuszZGJh && ' \
-                f'ffmpeg -i "{video_res2}" -an -vcodec libx264 -vb 460k -pass 1 -passlogfile "2pass_{video_res2}.log" -profile:v high10 -tune animation -preset medium -s 1280x720 "{current_directory}/encoder/encoded/HDL_{video_name}" && ' \
-                f'rm "{current_directory}/encoder/encoded/HDL_{video_name}" && ' \
-                f'ffmpeg -i "{video_res2}" -c:a aac -ab 70k -ac 2 -ar 22050 -vcodec libx264 -vb 460k -pass 2 -passlogfile "2pass_{video_res2}.log" -profile:v high10 -tune animation -preset slow -s 1280x720 -scodec copy -map 0 "{current_directory}/encoder/encoded/HDL_{video_name}" && ' \
-                f'rm "2pass_{video_res2}.log*" && ' \
-                f'telegram-upload -i --thumbnail-file "{video_res2}_min.jpg" "{current_directory}/encoder/encoded/HDL_{video_name}" --to https://t.me/+OyZLcyRrDuszZGJh -d'
-
-
-        comando = f'cd encoder && ' \
-                f'ffmpeg -i "{video_name}" -map 0:v -map 0:a -c:v libx264 -s 1280x720 -crf {param} -preset medium -tune animation -profile:v high -c:a copy "v2_{video_name}" && ' \
-                f'ffmpeg -i "v2_{video_name}" -ss 00:01:00 -s 1280x720 -frames:v 1 "v2_{video_name}_fondo.jpg" -y && ' \
-                f'ffmpeg -i "v2_{video_name}_fondo.jpg" -i "marca.png" -filter_complex "[1:v]scale=iw/2:-1 [marca_scaled]; [0:v][marca_scaled]overlay=W-w-10:H-h-10" "v2_{video_name}_min.jpg" -y && ' \
-                f'telegram-upload -i --thumbnail-file "v2_{video_name}_min.jpg" "v2_{video_name}" --to https://t.me/+OyZLcyRrDuszZGJh -d && ' \
+        if "-passlogfile" in str(infor):
+            logging.info("----PASANDO A 2PASS-------")
+            comando = (
+                f'cd encoder && '
+                f'ffmpeg -i "{video_name}" -an -vcodec libx264 -vb 460k -pass 1 -passlogfile "{video_name}_2pass.log" -profile:v high10 -tune animation -preset medium -f mp4 "encoded/{video_name}_temp.mp4" && '
+                f'ffmpeg -i "{video_name}" -c:a aac -ab 70k -ac 2 -ar 22050 -vcodec libx264 -vb 460k -pass 2 -passlogfile "{video_name}_2pass.log" -profile:v high10 -tune animation -preset medium -scodec copy -map 0 "encoded/HDL_{video_name}" && '
+                f'rm "{video_name}_2pass.log"* "encoded/{video_name}_temp.mp4" && '
+                f'cd encoded && '
+                f'ffmpeg -i "HDL_{video_name}" -ss 00:01:00 -s 1280x720 -frames:v 1 "HDL_{video_name}_fondo.jpg" -y && '
+                f'ffmpeg -i "HDL_{video_name}_fondo.jpg" -i "marca.png" -filter_complex "[1:v]scale=iw/2:-1 [marca_scaled]; [0:v][marca_scaled]overlay=W-w-10:H-h-10" "HDL_{video_name}_min.jpg" -y && '
+                f'telegram-upload -i --thumbnail-file "HDL_{video_name}_min.jpg" "HDL_{video_name}" --to {salida_link_grupo} -d'
+            )
+        else:
+            logging.info("-------PASANDO A CRF---------")
+            comando = (
+                f'cd encoder && '
+                f'ffmpeg -i "{video_name}" -map 0:v -map 0:a -c:v libx264 -s 1280x720 -crf {param} -preset medium -tune animation -profile:v high -vf "subtitles=marca_bot.ass" -c:a copy "v2_{video_name}" && '
+                f'ffmpeg -i "v2_{video_name}" -ss 00:01:00 -s 1280x720 -frames:v 1 "v2_{video_name}_fondo.jpg" -y && '
+                f'ffmpeg -i "v2_{video_name}_fondo.jpg" -i "marca.png" -filter_complex "[1:v]scale=iw/2:-1 [marca_scaled]; [0:v][marca_scaled]overlay=W-w-10:H-h-10" "v2_{video_name}_min.jpg" -y && '
+                f'telegram-upload -i --thumbnail-file "v2_{video_name}_min.jpg" "v2_{video_name}" --to {salida_link_grupo} -d && '
                 f'rm "v2_{video_name}_fondo.jpg" && rm "v2_{video_name}_min.jpg" '
-
+            )
 
 
         print(f"bash ==> {comando}")
@@ -427,6 +434,7 @@ async def download_video(client, message, message2,param):
             logging.info(video_folder2)
             logging.info(video_folder3)
             #await progress_message.edit_text(f"v2_{video_name} ver en")
+
 
 
 def progress_down_callback(progress_message, video_name, user_mention, user_id):
