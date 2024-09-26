@@ -8,6 +8,11 @@ actualmente está ajustado solo para mi uso y tiene que editar el código cada u
 
 edita main.py y completa los datos del bot, id usuario, id grupo, link grupo/canal, api ip-hash
 
+- **Clonar repo**
+```
+git clone https://github.com/Jhon-Wilmer-JK/tgbot_shell_encoder && cd tgbot_shell_encoder
+```
+
 - **Comandos**
 ```
 /shell = ejecuta comando que tiene salida rápido con un ls, cat, mkdir, rm, df -h y otros
