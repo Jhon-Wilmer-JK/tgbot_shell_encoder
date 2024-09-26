@@ -35,3 +35,15 @@ mkdir encoder && cd encoder && mkdir encoded
 
 agregar una imagen para su marca de agua en cada carpeta creado con el nombre de marca.png de una altura de más o menos 500px
 y un archivo de subtitulo para la marca de agua del vídeo con el combre de marca_bot.ass
+
+- **Estructura General del Bot**
+```
+tgbot_shell_encoder/
+|  main.py
+|  encoder/
+|  |  marca.png
+|  |  marca_bot.ass
+|  |  encoded/
+|  |  |  marca.png
+|__|__|__marca_bot.ass
+```
